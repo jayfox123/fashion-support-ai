@@ -39,7 +39,7 @@ async function sendMessage() {
     userInputField.value = '';
 
     try {
-        const response = await fetch('http://localhost:8000/api/chat', {
+        const response = await fetch('https://fashion-support-ai.onrender.com/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
