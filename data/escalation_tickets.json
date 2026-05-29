@@ -1,0 +1,9 @@
+[
+  {
+    "ticket_id": "ESC-20260529140428",
+    "timestamp": "2026-05-29 14:04:28",
+    "customer_message": "This is the worst service ever, I want to speak to a manager!",
+    "status": "pending",
+    "priority": "high"
+  }
+]
