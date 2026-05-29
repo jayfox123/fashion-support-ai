@@ -1,9 +1,10 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from agents.supervisor import handle_customer_message
+from utils.voice_service import text_to_speech
 from config import settings
-
+import io
 
 app = FastAPI(title="Fashion Support AI", version="1.0.0")
 
@@ -52,9 +53,30 @@ async def health_check():
         "status": "healthy",
         "agents": [
             "order_agent",
-            "query_agent", 
+            "query_agent",
             "recommendation_agent",
             "returns_agent",
             "escalation_agent"
         ]
     }
+
+@app.post("/api/voice")
+async def voice(request: Request):
+    try:
+        data = await request.json()
+        text = data.get("text", "")
+
+        if not text:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "Text cannot be empty"}
+            )
+
+        audio = text_to_speech(text)
+        return StreamingResponse(io.BytesIO(audio), media_type="audio/mpeg")
+
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(e), "status": "error"}
+        )

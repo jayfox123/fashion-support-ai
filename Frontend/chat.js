@@ -22,9 +22,35 @@ function appendMessage(sender, message, agentName = null) {
     
     messageDiv.appendChild(senderLabel);
     messageDiv.appendChild(bubble);
+
+    if (sender !== 'You') {
+        const voiceBtn = document.createElement('button');
+        voiceBtn.classList.add('voice-btn');
+        voiceBtn.textContent = '🔊 Listen';
+        voiceBtn.onclick = () => playVoice(message);
+        messageDiv.appendChild(voiceBtn);
+    }
+
     messagesDiv.appendChild(messageDiv);
-    
     document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
+}
+
+async function playVoice(text) {
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/voice', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: text })
+        });
+
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        audio.play();
+
+    } catch (error) {
+        console.error('Voice error:', error);
+    }
 }
 
 async function sendMessage() {
