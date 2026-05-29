@@ -1,0 +1,86 @@
+{
+  "products": [
+    {
+      "id": "P001",
+      "name": "Classic White Dress",
+      "category": "dresses",
+      "price": 89.99,
+      "sizes": ["XS", "S", "M", "L", "XL"],
+      "colors": ["white", "cream"],
+      "in_stock": true,
+      "description": "Elegant classic white dress perfect for any occasion"
+    },
+    {
+      "id": "P002",
+      "name": "Slim Fit Blue Jeans",
+      "category": "bottoms",
+      "price": 64.99,
+      "sizes": ["28", "30", "32", "34", "36"],
+      "colors": ["blue", "dark blue", "black"],
+      "in_stock": true,
+      "description": "Modern slim fit jeans with stretch comfort fabric"
+    },
+    {
+      "id": "P003",
+      "name": "Floral Summer Blouse",
+      "category": "tops",
+      "price": 45.99,
+      "sizes": ["XS", "S", "M", "L"],
+      "colors": ["pink", "yellow", "green"],
+      "in_stock": true,
+      "description": "Light and breezy floral blouse perfect for summer"
+    },
+    {
+      "id": "P004",
+      "name": "Leather Ankle Boots",
+      "category": "shoes",
+      "price": 129.99,
+      "sizes": ["36", "37", "38", "39", "40", "41"],
+      "colors": ["black", "brown", "tan"],
+      "in_stock": true,
+      "description": "Premium leather ankle boots with comfortable sole"
+    },
+    {
+      "id": "P005",
+      "name": "Wool Blend Blazer",
+      "category": "outerwear",
+      "price": 149.99,
+      "sizes": ["S", "M", "L", "XL"],
+      "colors": ["navy", "grey", "black"],
+      "in_stock": false,
+      "description": "Professional wool blend blazer for office or evening wear"
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "ORD-001",
+      "customer_name": "Sarah Johnson",
+      "items": ["Classic White Dress", "Floral Summer Blouse"],
+      "total": 135.98,
+      "status": "shipped",
+      "tracking_number": "TRK-789456123",
+      "order_date": "2026-05-20",
+      "estimated_delivery": "2026-05-30"
+    },
+    {
+      "order_id": "ORD-002",
+      "customer_name": "Maria Garcia",
+      "items": ["Slim Fit Blue Jeans", "Leather Ankle Boots"],
+      "total": 194.98,
+      "status": "processing",
+      "tracking_number": null,
+      "order_date": "2026-05-28",
+      "estimated_delivery": "2026-06-05"
+    },
+    {
+      "order_id": "ORD-003",
+      "customer_name": "Emma Wilson",
+      "items": ["Wool Blend Blazer"],
+      "total": 149.99,
+      "status": "delivered",
+      "tracking_number": "TRK-321654987",
+      "order_date": "2026-05-15",
+      "estimated_delivery": "2026-05-22"
+    }
+  ]
+}

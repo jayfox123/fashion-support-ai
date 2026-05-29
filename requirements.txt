@@ -1,0 +1,8 @@
+crewai
+langchain
+fastapi
+uvicorn
+python-dotenv
+pandas
+numpy
+jinja2

@@ -1,0 +1,23 @@
+[
+  {
+    "ticket_id": "ESC-20260529140428",
+    "timestamp": "2026-05-29 14:04:28",
+    "customer_message": "This is the worst service ever, I want to speak to a manager!",
+    "status": "pending",
+    "priority": "high"
+  },
+  {
+    "ticket_id": "ESC-20260529154026",
+    "timestamp": "2026-05-29 15:40:26",
+    "customer_message": "but i want my money right away",
+    "status": "pending",
+    "priority": "high"
+  },
+  {
+    "ticket_id": "ESC-20260529154945",
+    "timestamp": "2026-05-29 15:49:45",
+    "customer_message": "but i need the money right away",
+    "status": "pending",
+    "priority": "high"
+  }
+]
