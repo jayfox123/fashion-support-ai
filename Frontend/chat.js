@@ -37,7 +37,7 @@ function appendMessage(sender, message, agentName = null) {
 
 async function playVoice(text) {
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/voice', {
+        const response = await fetch('https://fashion-support-ai-production.up.railway.app/api/voice', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: text })
@@ -65,7 +65,7 @@ async function sendMessage() {
     userInputField.value = '';
 
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/chat', {
+        const response = await fetch('https://fashion-support-ai-production.up.railway.app/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
