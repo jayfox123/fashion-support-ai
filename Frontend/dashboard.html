@@ -2,14 +2,128 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Analytics Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUXE Fashion — Admin Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        body { font-family: 'Georgia', serif; background: #f5f0eb; padding: 30px; display: block; justify-content: unset; align-items: unset; min-height: unset; }
+        .dashboard-header { background: #1a1a1a; color: white; padding: 20px 30px; border-radius: 12px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .dashboard-header h1 { font-size: 16px; letter-spacing: 3px; text-transform: uppercase; font-weight: 400; }
+        .dashboard-header p { font-size: 11px; color: #c9a96e; letter-spacing: 1px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; border-radius: 12px; padding: 24px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .stat-number { font-size: 36px; font-weight: 300; color: #1a1a1a; margin-bottom: 6px; }
+        .stat-label { font-size: 11px; color: #999; letter-spacing: 1px; text-transform: uppercase; }
+        .stat-card.escalated .stat-number { color: #e74c3c; }
+        .section-title { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #999; margin-bottom: 12px; }
+        .agent-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+        .agent-card { background: white; border-radius: 10px; padding: 16px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .agent-name { font-size: 11px; color: #666; margin-bottom: 6px; }
+        .agent-count { font-size: 24px; font-weight: 300; color: #1a1a1a; }
+        .log-table { width: 100%; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .log-table table { width: 100%; border-collapse: collapse; }
+        .log-table th { background: #1a1a1a; color: white; padding: 12px 16px; font-size: 11px; letter-spacing: 1px; text-align: left; font-weight: 400; }
+        .log-table td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid #f0e8e0; color: #333; }
+        .log-table tr:last-child td { border-bottom: none; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 10px; letter-spacing: 0.5px; }
+        .badge.escalated { background: #fde8e8; color: #e74c3c; }
+        .badge.normal { background: #e8f5e9; color: #2e7d32; }
+        .refresh-btn { background: #c9a96e; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 12px; letter-spacing: 1px; }
+        .empty-state { text-align: center; padding: 40px; color: #999; font-size: 14px; }
+    </style>
 </head>
 <body>
-    <h1>Analytics Dashboard</h1>
-    <div id="dashboard">
-        <!-- Placeholder for analytics content -->
-        <p>Analytics data will be displayed here.</p>
+
+    <div class="dashboard-header">
+        <div>
+            <h1>LUXE Fashion</h1>
+            <p>Admin Dashboard — Live Analytics</p>
+        </div>
+        <button class="refresh-btn" onclick="loadDashboard()">↻ Refresh</button>
     </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number" id="total-conversations">0</div>
+            <div class="stat-label">Total Conversations</div>
+        </div>
+        <div class="stat-card escalated">
+            <div class="stat-number" id="escalated-count">0</div>
+            <div class="stat-label">Escalated Tickets</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="resolution-rate">0%</div>
+            <div class="stat-label">AI Resolution Rate</div>
+        </div>
+    </div>
+
+    <p class="section-title">Agent Activity</p>
+    <div class="agent-grid">
+        <div class="agent-card"><div class="agent-name">Query Agent</div><div class="agent-count" id="count-query_agent">0</div></div>
+        <div class="agent-card"><div class="agent-name">Order Agent</div><div class="agent-count" id="count-order_agent">0</div></div>
+        <div class="agent-card"><div class="agent-name">Returns Agent</div><div class="agent-count" id="count-returns_agent">0</div></div>
+        <div class="agent-card"><div class="agent-name">Recommendation</div><div class="agent-count" id="count-recommendation_agent">0</div></div>
+        <div class="agent-card"><div class="agent-name">Escalation</div><div class="agent-count" id="count-escalation_agent">0</div></div>
+    </div>
+
+    <p class="section-title">Recent Conversations</p>
+    <div class="log-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Customer Message</th>
+                    <th>Agent</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="conversation-log">
+                <tr><td colspan="4" class="empty-state">No conversations yet. Start chatting to see data here.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadDashboard() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/dashboard');
+                const data = await response.json();
+
+                document.getElementById('total-conversations').textContent = data.total_conversations;
+                document.getElementById('escalated-count').textContent = data.escalated_count;
+
+                const resolutionRate = data.total_conversations === 0 ? 0 :
+                    Math.round(((data.total_conversations - data.escalated_count) / data.total_conversations) * 100);
+                document.getElementById('resolution-rate').textContent = resolutionRate + '%';
+
+                const agents = ['query_agent', 'order_agent', 'returns_agent', 'recommendation_agent', 'escalation_agent'];
+                agents.forEach(agent => {
+                    const el = document.getElementById('count-' + agent);
+                    if (el) el.textContent = data.agent_counts[agent] || 0;
+                });
+
+                const tbody = document.getElementById('conversation-log');
+                if (data.recent_conversations.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No conversations yet.</td></tr>';
+                } else {
+                    tbody.innerHTML = data.recent_conversations.reverse().map(c => `
+                        <tr>
+                            <td>${c.timestamp}</td>
+                            <td>${c.customer_message.substring(0, 60)}${c.customer_message.length > 60 ? '...' : ''}</td>
+                            <td>${c.agent_used}</td>
+                            <td><span class="badge ${c.escalated ? 'escalated' : 'normal'}">${c.escalated ? 'Escalated' : 'Resolved'}</span></td>
+                        </tr>
+                    `).join('');
+                }
+
+            } catch (error) {
+                console.error('Dashboard error:', error);
+            }
+        }
+
+        loadDashboard();
+        setInterval(loadDashboard, 10000);
+    </script>
+
 </body>
 </html>

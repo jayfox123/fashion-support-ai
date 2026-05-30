@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from agents.supervisor import handle_customer_message
 from utils.voice_service import text_to_speech
 from config import settings
+from datetime import datetime
 import io
 
 app = FastAPI(title="Fashion Support AI", version="1.0.0")
@@ -15,6 +16,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# In-memory conversation log
+conversation_log = []
 
 @app.get("/")
 async def root():
@@ -34,6 +38,15 @@ async def chat(request: Request):
             )
 
         result = handle_customer_message(message, context)
+
+        # Log the conversation
+        conversation_log.append({
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "customer_message": message,
+            "agent_response": result["response"],
+            "agent_used": result["agent_used"],
+            "escalated": result["agent_used"] == "escalation_agent"
+        })
 
         return JSONResponse(content={
             "response": result["response"],
@@ -59,6 +72,23 @@ async def health_check():
             "escalation_agent"
         ]
     }
+
+@app.get("/api/dashboard")
+async def dashboard_stats():
+    total = len(conversation_log)
+    escalated = sum(1 for c in conversation_log if c["escalated"])
+    
+    agent_counts = {}
+    for c in conversation_log:
+        agent = c["agent_used"]
+        agent_counts[agent] = agent_counts.get(agent, 0) + 1
+
+    return JSONResponse(content={
+        "total_conversations": total,
+        "escalated_count": escalated,
+        "agent_counts": agent_counts,
+        "recent_conversations": conversation_log[-10:]
+    })
 
 @app.post("/api/voice")
 async def voice(request: Request):
